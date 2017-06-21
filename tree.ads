@@ -1,4 +1,4 @@
-package Tree is
+package Tree with SPARK_Mode is
   type Null_or_Index_Type is range 0..10000;
   subtype Index_Type is Null_or_Index_Type range 1..10000;
 
@@ -23,6 +23,5 @@ package Tree is
   function create_root (Value : Integer) return Tree_Type;
   procedure tree_image (Tree : Tree_Type );
   procedure append_left (Tree: in out Tree_Type; Value : Integer);
-  --procedure append_right
 
 end Tree;

@@ -1,6 +1,5 @@
-
 with Ada.Text_IO;
-package body Tree is
+package body Tree with SPARK_Mode is
    function create_root (Value : Integer) return Tree_Type is
      Tree : Tree_Type;
    begin
@@ -13,12 +12,14 @@ package body Tree is
      Tree.Tree(1).Value := Value;
      Return Tree;
    end create_root;
+
    procedure append_left (Tree: in out Tree_Type; Value : Integer) is
    begin
      Tree.Tree(Tree.Current).Left := Tree.Max + 1;
      Tree.Tree(Tree.Max + 1).Value := Value;
      Tree.Max := Tree.Max + 1;
    end append_left;
+
    procedure index_image(TA : Tree_Array; NIT : Null_or_Index_Type) is
    begin
       if NIT /= 0 then
