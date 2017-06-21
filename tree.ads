@@ -6,7 +6,7 @@ package Tree is
     Left : Null_or_Index_Type;
     Right : Null_or_Index_Type;
       Value : Integer;
-      Use_Flag : Boolean;
+      -- Use_Flag : Boolean;
       -- pointer? to data
       -- security data
       -- link file?
