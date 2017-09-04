@@ -19,10 +19,29 @@ package API is
 
    type Session_Id is new Integer;
 
-   function Mutual_Authentication (Id : Id_Type; Names : Name_List; Keys : Key_List)
+   function Mutual_Authentication (Id : Id_Type;
+                                   Names(full path file or directory names) : Name_List;
+                                   Hash(Keys) : Key_List)
 				  return Session_Id;
    --  open nodes (and directory's child nodes)
    --  need to provide all names and keys that one wants to access in this session
+   -- forall argument key is right    right is hash(argument of key list) = hash(key list in file system)
+   -- forall d keys is listed
+   -- d is parent directory of file and parent parent directory of file and ... and root directory
+
+--  root (key1)
+--    |
+--    +  dir_a/ (key2)
+--    |         |
+--    |         |
+--    |        + file_a (key3)
+--    +  dir_b/ (key4)
+--              |
+--            |
+--          + file_b (key5)
+
+
+
 
    procedure Create_Directory (ID : Session_Id;
 			       Parent_Dir_Name : Name_Type;
@@ -30,11 +49,14 @@ package API is
 			       Key : Key_Type);
    --  create new directory
    --  pre condition: opened parent directory of new directory
-   --                 name is new name
+   --                 name is new name in parent directory
+   --                       or
+   --                 full_path_directory_name is new name
 
    procedure Delete_Directory (Id : Session_Id;
 			       Name : Name_Type);
    --  pre condition: opened parent directory
+   --                 exist directory
    --                 directory is empty
 
    type Byte is mod 2 ** 8;
@@ -50,12 +72,14 @@ package API is
 			  Initial_Data : Data_Type);
    --  create new file
    --  pre condition: opened parent directory
-   --                 name is new name
-
+   --                 name is new name in directory
+   --                       or
+   --                 full_path_file_name is new name
 
    procedure Delete_File (Id : Session_Id;
 			  Name : Name_Type);
    --  pre condition: opened parent directory
+   --                 exist file
 
    function Read_File (Id : Session_Id;
 		       Name : Name_Type)
@@ -68,22 +92,22 @@ package API is
    --  pre condition: opened file
    --  internally, block size 4K
    --  if Data'Length > 4K, Write_File will distribute data over blocks
-   --  
+   --
    --  for example, Data'Length 4K + 1 -> 2 blocks used
-   
+
 
    procedure Change_Key (Id : Session_Id; Name : Name_Type; Key : Key_Type);
    --  pre condition: opened parent directory
-   
-   
-   
+
+
+
    --  simple *implementation* proposal
    --  datablocks
    --  inode array (1 inode = file or directory)
    --  bitmaps for used/unused information
-   
+
    --  specification
    --  tree structure/sets and maps
-   
+
    --  pre/post conditions expressed using specification types
 end API;
