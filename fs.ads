@@ -29,6 +29,7 @@ package API is
    -- forall d keys is listed
    -- d is parent directory of file and parent parent directory of file and ... and root directory
 
+--  Example: if access to file_a and file_b is desired, keys 1 to 5 must be requested
 --  root (key1)
 --    |
 --    +  dir_a/ (key2)
