@@ -1,16 +1,26 @@
-with Ada.Containers.Formal_Vectors;
-
-package API is
+package FS is
 
    type Id_Type is new Integer;
    type Key_Type is new Integer;
-   type Name_Type is new String (1 .. 80);
-   --  name = string (no structure), unique over entire file system
 
-   package Name_Lists is new Ada.Containers.Formal_Vectors (Positive, Name_Type);
-   package Key_Lists is new Ada.Containers.Formal_Vectors (Positive, Key_Type);
-   subtype Name_List is Name_Lists.Vector;
-   subtype Key_List is Key_Lists.Vector;
+   type Key_Array is array (Natural range <>) of Key;
+
+   subtype String_Length is Natural range 1 .. 20;
+   subtype Path_Length is Natural range 1 .. 10;
+
+   type Name_Type (Len : String_Length := 10) is record
+      Name : String (1 .. Len);
+   end record;
+
+   type Name_Array is array (Natural range <>) of Name_Type;
+
+   type Path_Type (Len : Path_Length := 2) is record
+      Path : Name_Array (1 .. Len);
+   end record;
+
+   type Path_Array is array (Natural range <>) of Path_Type;
+
+   type Hash_Type is mod 2 ** 32;
 
    procedure Create_Filesystem (Id : Id_Type; Root_Key : Key_Type);
    --  create root node
@@ -19,10 +29,27 @@ package API is
 
    type Session_Id is new Integer;
 
+   function Parent (P : Path_Type) return Path_Type;
+
+   function Contains (A : Path_Array, P : Path_Type) is
+     (for some P2 of A => P = P2);
+
+   funtion Hash_Keys (A : Key_Array) return Hash_Type;
+
+   package Internals with Ghost is
+      function Key (P : Path_Type) return Key_Type;
+   end Internals;
+
    function Mutual_Authentication (Id : Id_Type;
-                                   Names(full path file or directory names) : Name_List;
-                                   Hash(Keys) : Key_List)
-				  return Session_Id;
+                                   Paths : Path_Array;
+                                   Hash : Hash_Type)
+                                   return Session_Id
+     with Pre =>
+        (for all P of Paths => Contains (Paths, Parent P)) and then
+          Hash_Keys (
+
+
+
    --  open nodes (and directory's child nodes)
    --  need to provide all names and keys that one wants to access in this session
    -- forall argument key is right    right is hash(argument of key list) = hash(key list in file system)
@@ -111,4 +138,4 @@ package API is
    --  tree structure/sets and maps
 
    --  pre/post conditions expressed using specification types
-end API;
+end FS;
